@@ -39,7 +39,7 @@ class TikTokBot:
         self.driver.add_cookie({'name' : 'sessionid', 'value' : tiktok_sessionID, 'domain' : '.tiktok.com'})
         time.sleep(1)
         self.driver.get('https://www.tiktok.com/upload/?lang=en')
-        self.url = self.driver.current_url
+        self.url = self.driver.current_url 
         print(self.url)
 
         # takes you to the upload page
@@ -76,18 +76,19 @@ class TikTokBot:
         time.sleep(uploadInterval)
         self.driver.close()
         
+def validFileName(str):
+    prohibedChars = "'.:#|,/<>\"\\?*"
+    for prohibedChar in list(prohibedChars):
+        str = str.replace(prohibedChar, "")
+    return str;
 
 for i in toDownload:
     yt = YouTube(i)
-    yt.streams.first().download('./videos/brut/uncuted')
+    yt.streams.first().download('./videos/brut')
 
-    title = yt.title.replace("'", "")
-    title = title.replace("'", "")
-    title = title.replace(":", "")
-    title = title.replace("#", "")
-    title = title.replace("|", "")
+    title = validFileName(yt.title)
 
-    clip = VideoFileClip("./videos/brut/uncuted/" + title +".mp4")
+    clip = VideoFileClip("./videos/brut/" + title +".mp4")
     parts = ceil(clip.duration/50)
     for x in range(parts):
         part = x + 1
@@ -97,11 +98,10 @@ for i in toDownload:
             end = part*50
 
         start = x*50
-        ffmpeg_extract_subclip("./videos/brut/uncuted/" + title + ".mp4", start, end, targetname="./videos/cut/unposted/" + title +"$$part" + str(part).zfill(2) + ".mp4") 
+        ffmpeg_extract_subclip("./videos/brut/" + title + ".mp4", start, end, targetname="./videos/cut/" + title +"$$part" + str(part).zfill(2) + ".mp4") 
         time.sleep(5)
         titleComplete = title + " - part " + str(part)
-        TikTokBot(who_can_view="Public", video_path="./videos/cut/unposted/" + title + "$$part" + str(part).zfill(2) + ".mp4", caption=titleComplete + " " + hashtags)
+        TikTokBot(who_can_view="Public", video_path="./videos/cut/" + title + "$$part" + str(part).zfill(2) + ".mp4", caption=titleComplete + " " + hashtags)
         time.sleep(1)
-        os.remove("./videos/cut/unposted/" + title + "$$part" + str(part).zfill(2) + ".mp4")
-    os.remove("./videos/brut/uncuted/" + title +".mp4")
+        os.remove("./videos/cut/" + title + "$$part" + str(part).zfill(2) + ".mp4")
 
